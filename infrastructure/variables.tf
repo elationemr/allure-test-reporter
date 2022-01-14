@@ -74,6 +74,6 @@ locals {
   workspace = merge(local.env.defaults, lookup(
     local.workspaces,
     var.environment,
-    local.workspaces.stage
+    local.workspaces.dev
   ))
 }
