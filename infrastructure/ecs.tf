@@ -1,36 +1,36 @@
-data "aws_ssm_parameter" "caregaps_service_sg_id" {
-  name = "/el8/caregaps/${local.workspace.environment}/service_security_group/id"
-}
+# data "aws_ssm_parameter" "caregaps_service_sg_id" {
+#   name = "/el8/caregaps/${local.workspace.environment}/service_security_group/id"
+# }
 
-resource "aws_ecs_service" "ecs_service" {
-  name    = "${local.project}-${local.workspace.environment}-${local.service_key}"
-  cluster = local.workspace.cluster
+# resource "aws_ecs_service" "ecs_service" {
+#   name    = "${local.project}-${local.workspace.environment}-${local.service_key}"
+#   cluster = local.workspace.cluster
 
-  desired_count = local.workspace.desired_tasks
+#   desired_count = local.workspace.desired_tasks
 
-  launch_type = "FARGATE"
+#   launch_type = "FARGATE"
 
-  deployment_minimum_healthy_percent = 50
-  deployment_maximum_percent         = 200
+#   deployment_minimum_healthy_percent = 50
+#   deployment_maximum_percent         = 200
 
-  task_definition = aws_ecs_task_definition.service.arn
+#   task_definition = aws_ecs_task_definition.service.arn
 
-  depends_on = [
-    aws_iam_role.instance_role
-  ]
+#   depends_on = [
+#     aws_iam_role.instance_role
+#   ]
 
-  network_configuration {
-    subnets          = local.workspace.private_subnets
-    security_groups  = [data.aws_ssm_parameter.caregaps_service_sg_id.value]
-    assign_public_ip = true
-  }
+#   network_configuration {
+#     subnets          = local.workspace.private_subnets
+#     security_groups  = [data.aws_ssm_parameter.caregaps_service_sg_id.value]
+#     assign_public_ip = true
+#   }
 
-  lifecycle {
-    ignore_changes = [
-      task_definition,
-      desired_count
-    ]
-  }
+#   lifecycle {
+#     ignore_changes = [
+#       task_definition,
+#       desired_count
+#     ]
+#   }
 
-  tags = local.default_tags
-}
+#   tags = local.default_tags
+# }

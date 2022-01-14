@@ -22,5 +22,4 @@ provider "aws" {
   assume_role {
     role_arn = "arn:aws:iam::${local.aws_account_id}:role/${local.workspace.environment}-${local.service_key}-automation-role"
   }
-  region = local.workspace.region
 }
