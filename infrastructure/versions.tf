@@ -13,7 +13,7 @@ terraform {
     organization = "elation"
 
     workspaces {
-      prefix = "insurance-api_"
+      prefix = "allure-test-reporter-"
     }
   }
 }

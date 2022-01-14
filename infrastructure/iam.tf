@@ -36,16 +36,6 @@ resource "aws_iam_policy" "task_policy" {
             ],
             "Effect": "Allow",
             "Resource": "*"
-        },
-        {
-            "Action": [
-                "dynamodb:*"
-            ],
-            "Effect": "Allow",
-            "Resource": [
-              "arn:aws:dynamodb:${local.workspace.region}:${local.workspace.aws_account_id}:table/*${local.workspace.environment}-insurance-table",
-              "arn:aws:dynamodb:${local.workspace.region}:${local.workspace.aws_account_id}:table/*${local.workspace.environment}-insurance-table/index/*"
-            ]
         }
     ]
 }

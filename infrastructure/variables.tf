@@ -68,7 +68,12 @@ locals {
       private_subnets = ["subnet-03e17b0310aa4978b", "subnet-0de20c7cd6fa93cd2", "subnet-0bad51598c09f1380"] # el8-dev-private 1,2,3
       private_sg_id   = "sg-0cc83447363369cc7"
     }
+    # we don't want this deployed to environments above dev
   }
 
-  workspace = merge(local.env.defaults, local.workspaces.dev)
+  workspace = merge(local.env.defaults, lookup(
+    local.workspaces,
+    var.environment,
+    local.workspaces.stage
+  ))
 }
