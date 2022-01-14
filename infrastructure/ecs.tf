@@ -25,12 +25,6 @@ resource "aws_ecs_service" "ecs_service" {
     assign_public_ip = true
   }
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.ecs_service_lb_tg.arn
-    container_name   = "service"
-    container_port   = 80
-  }
-
   lifecycle {
     ignore_changes = [
       task_definition,
