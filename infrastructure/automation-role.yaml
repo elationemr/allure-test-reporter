@@ -1,0 +1,128 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: This stack will create an IAM role which will be used by GH Actions to execute infra spin ups and code deployment.
+Parameters:
+  AutomationRoleKey:
+    Type: String
+  Environment:
+    Type: String
+Resources:
+  AutomationRole:
+    Type:  AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${Environment}-${AutomationRoleKey}-automation-role"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS:
+                - !Sub "arn:aws:iam::${AWS::AccountId}:user/GithubCI"
+            Action:
+              - 'sts:AssumeRole'
+  StandardPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub "${Environment}-${AutomationRoleKey}-standard-policy"
+      Roles:
+       - !Ref AutomationRole
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'sts:GetCallerIdentity'
+            Resource: '*'
+  
+  
+
+
+  # The policy to be extended as needed for the microservice:
+  AutomationPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub "${Environment}-${AutomationRoleKey}-automation-policy"
+      Roles:
+       - !Ref AutomationRole
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+              
+          # IAM
+          # TODO: Restrict
+          - Effect: Allow
+            Action:
+              - 'iam:*'
+            Resource:
+              - !Sub "arn:aws:iam::${AWS::AccountId}:role/*${Environment}-${AutomationRoleKey}*"
+              - !Sub "arn:aws:iam::${AWS::AccountId}:policy/*${Environment}-${AutomationRoleKey}*"
+
+          # ECS
+          # TODO: Restrict
+          - Effect: Allow
+            Action:
+              - "ecs:*"
+            Resource:
+              - !Sub "arn:aws:ecs:*:${AWS::AccountId}:cluster/*${Environment}-${AutomationRoleKey}*"
+              - !Sub "arn:aws:ecs:*:${AWS::AccountId}:service/*${Environment}-${AutomationRoleKey}*"
+              - !Sub "arn:aws:ecs:*:${AWS::AccountId}:task/*"
+              - !Sub "arn:aws:ecs:*:${AWS::AccountId}:task-definition/*${Environment}-${AutomationRoleKey}*"
+              - !Sub "arn:aws:ecs:*:${AWS::AccountId}:container-instance/*"
+          - Effect: Allow
+            Action:
+              - "ecs:RegisterTaskDefinition"
+              - "ecs:DeregisterTaskDefinition"
+              - "ecs:DescribeTaskDefinition"
+              - "ecs:DescribeServices"
+            Resource:
+              - "*"
+
+          # STS
+          - Effect: Allow
+            Action:
+              - 'sts:GetCallerIdentity'
+            Resource: '*'
+
+          # ELB
+          - Effect: Allow
+            Action:
+              - 'elasticloadbalancing:*'
+            Resource: '*'
+
+          - Effect: Allow
+            Action:
+              - 'ssm:GetParameter'
+            Resource:
+              - !Sub "arn:aws:ssm:*:${AWS::AccountId}:parameter/el8/caregaps/${Environment}/load_balancer/arn"
+              - !Sub "arn:aws:ssm:*:${AWS::AccountId}:parameter/el8/caregaps/${Environment}/service_security_group/id"
+              - !Sub "arn:aws:ssm:*:${AWS::AccountId}:parameter/el8/microservices/${Environment}/cloudwatch_to_kinesis_iam_role/arn"
+              - !Sub "arn:aws:ssm:*:${AWS::AccountId}:parameter/el8/microservices/${Environment}/kinesis_logs_stream/arn"
+
+          - Effect: Allow
+            Action:
+              - 'logs:*'
+            Resource:
+              - "*"
+          
+          - Effect: Allow
+            Action:
+              - 'iam:PassRole'
+            Resource:
+              - !Sub "arn:aws:iam::${AWS::AccountId}:role/microservices-${Environment}-cwtokinesis"
+
+          # ELB Security Group
+          - Effect: Allow
+            Action:
+              - "ec2:UpdateSecurityGroupRuleDescriptionsEgress"
+              - "ec2:CreateSecurityGroup"
+              - "ec2:DeleteSecurityGroup"
+              - "ec2:ModifySecurityGroupRules"
+              - "ec2:UpdateSecurityGroupRuleDescriptionsIngress"
+            Resource: 
+              - !Sub "arn:aws:ec2:*:${AWS::AccountId}:security-group/*"
+
+          # Cloudformation self cleanup
+          - Effect: Allow
+            Action:
+              - 'cloudformation:DeleteStack'
+            Resource:
+              - !Sub "arn:aws:cloudformation:*:${AWS::AccountId}:stack/${Environment}-${AutomationRoleKey}-automation-stack/*"

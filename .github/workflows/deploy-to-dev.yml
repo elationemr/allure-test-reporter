@@ -1,0 +1,97 @@
+name: Deploy to Dev
+
+on:
+  push:
+    branches:
+      - 'init'
+jobs:
+  deploy:
+    name: Deploy
+    environment: dev
+    env:
+      TF_WORKSPACE: dev
+      TF_VERSION: "1.0.6"
+      ENV: dev
+      ECR_REPOSITORY: ${{ secrets.SERVICE_KEY }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: elationemr/github-actions/deployment/build-and-push-to-ecr@main
+        id: build-and-push-image
+        with:
+          ecr-repository: ${{ secrets.SERVICE_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Assume Automation Role
+        uses: elationemr/github-actions/permissions/assume-automation-role@main
+        with:
+          role-template: infrastructure/automation-role.yaml
+          environment: ${{ env.ENV }}
+          service-key: ${{ secrets.SERVICE_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          # terraform_version: 0.13.0
+          terraform_wrapper: false
+          cli_config_credentials_token: ${{ secrets.TF_API_SECRET }}
+
+      - name: Render container definitions
+        env:
+          CONTAINER: ${{ steps.build-and-push-image.outputs.image }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SERVICE_KEY: ${{ secrets.SERVICE_KEY }}
+        run: |
+          echo  "Rendering container definitions with docker image ${{ env.CONTAINER }}"
+          envsubst < infrastructure/container-definitions.json > infrastructure/container-definitions-${ENV}.json
+      - name: Terraform Apply
+        id: terraform_apply
+        working-directory: ./infrastructure
+        continue-on-error: true
+        run: |
+          eval `ssh-agent`
+          mkdir ~/.ssh
+          echo "${{ secrets.MODULE_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 0600 ~/.ssh/id_rsa
+          ssh-add -k ~/.ssh/id_rsa
+          cat /home/runner/.terraformrc
+          terraform fmt -check
+          terraform init
+          terraform validate -no-color
+          terraform apply -auto-approve
+      - name: Fetch Output From Terraform
+        id: terraform_output
+        working-directory: ./infrastructure
+        if: steps.terraform_apply.outcome != 'failure'
+        run: |
+          echo "::set-output name=task_definition_arn::$(terraform output task_definition_arn)"
+          echo "::set-output name=cluster_name::$(terraform output cluster_name)"
+          echo "::set-output name=service_name::$(terraform output service_name)"
+      - name: Update Service to Use Latest Task Definition
+        if: steps.terraform_apply.outcome != 'failure'
+        run: |
+          aws ecs update-service \
+            --cluster ${{ steps.terraform_output.outputs.cluster_name }} \
+            --service ${{ steps.terraform_output.outputs.service_name }} \
+            --task-definition ${{ steps.terraform_output.outputs.task_definition_arn }}
+      
+      - name: Destroy Automation Role
+        uses: elationemr/github-actions/permissions/destroy-automation-role@main
+        with:
+          service-key: ${{ secrets.SERVICE_KEY }}
+          environment: ${{ env.ENV }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Report Outcome
+        if: steps.terraform_apply.outcome == 'failure'
+        run: |
+          echo "Terraform apply failed... The new version of the service was not deployed"
+          exit 1

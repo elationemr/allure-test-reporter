@@ -1,0 +1,14 @@
+version: '3'
+services:
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: allure-test-reporter
+    volumes:
+      - ./scripts
+      - ~/.aws:/root/.aws:cached
+    environment:
+      AWS_PROFILE: DeveloperAccess
+    command: scripts/generate-test-reports.sh
+  
