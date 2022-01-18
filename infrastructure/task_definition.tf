@@ -1,4 +1,4 @@
-resource "aws_ecs_task_definition" "service" {
+resource "aws_ecs_task_definition" "test_reporter" {
   family                   = "${local.project}-${local.workspace.environment}-${local.service_key}"
   container_definitions    = file("container-definitions-${local.workspace.environment}.json")
   task_role_arn            = aws_iam_role.task_role.arn
