@@ -9,8 +9,4 @@ module "test-data-bucket" {
   use_encryption = false
 
   use_versioning = false
-
-  providers = {
-    aws = local.workspace.region
-  }
 }
