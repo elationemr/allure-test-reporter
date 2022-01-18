@@ -1,30 +1,6 @@
 resource "aws_cloudwatch_event_rule" "test_data_upload" {
   name        = "test-data-upload"
   description = "Capture uploads to test data S3"
-
-  event_pattern = <<EOF
-{
-  "source": [
-    "aws.s3"
-  ],
-  "detail-type": [
-    "AWS API Call via CloudTrail"
-  ],
-  "detail": {
-    "eventSource": [
-      "s3.amazonaws.com"
-    ],
-    "eventName": [
-      "PutObject"
-    ],
-    "requestParameters": {
-      "bucketName": [
-        "${local.project}-${local.workspace.environment}-test-data-bucket"
-      ]
-    }
-  }
-}
-EOF
 }
 
 resource "aws_cloudwatch_event_target" "ecstask" {
