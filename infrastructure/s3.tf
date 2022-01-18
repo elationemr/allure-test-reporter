@@ -11,6 +11,6 @@ module "test-data-bucket" {
   use_versioning = false
 
   providers = {
-    aws = local.region
+    aws = local.workspace.region
   }
 }
