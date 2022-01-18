@@ -130,8 +130,6 @@ Resources:
           # S3
           - Effect: Allow
             Action:
-              - s3:createBucket
-              - s3:ListAllMyBuckets
+              - 's3:*'
             Resource:
-              - !Sub arn:aws:s3:::*${Environment}-test-data-bucket*
-              - !Sub arn:aws:s3:::*${Environment}-test-data-bucket/*
+              - '*'
