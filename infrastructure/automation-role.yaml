@@ -126,3 +126,11 @@ Resources:
               - 'cloudformation:DeleteStack'
             Resource:
               - !Sub "arn:aws:cloudformation:*:${AWS::AccountId}:stack/${Environment}-${AutomationRoleKey}-automation-stack/*"
+
+          # S3
+          - Effect: Allow
+            Action:
+              - s3:createBucket
+            Resource:
+              - !Sub arn:aws:s3:::*test-data-bucket*
+              - !Sub arn:aws:s3:::*test-data-bucket*/*
