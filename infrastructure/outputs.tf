@@ -3,7 +3,7 @@
 # would probably be to upload task definitions to ECS for services.
 
 output "task_definition_arn" {
-  value = aws_ecs_task_definition.service.arn
+  value = aws_ecs_task_definition.test_reporter.arn
 }
 
 # output "cluster_name" {
