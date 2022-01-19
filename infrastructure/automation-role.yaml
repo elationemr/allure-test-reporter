@@ -148,5 +148,6 @@ Resources:
               - 'events:DescribeRule'
               - 'events:DeleteRule'
               - 'events:PutTargets'
+              - 'events:ListTargetsByRule'
             Resource:
               - arn:aws:events:*:*:rule/test-data-upload 
