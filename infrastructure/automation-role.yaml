@@ -140,3 +140,10 @@ Resources:
               - 'cloudwatch:*'
             Resource:
               - '*'
+
+          # Event
+          - Effect: Allow
+            Action:
+              - 'event:PutRule'
+            Resource:
+              - arn:aws:events:*:*:rule/test-data-upload 
