@@ -144,6 +144,6 @@ Resources:
           # Event
           - Effect: Allow
             Action:
-              - 'event:PutRule'
+              - 'events:PutRule'
             Resource:
               - arn:aws:events:*:*:rule/test-data-upload 
