@@ -29,7 +29,7 @@ EOF
 
 resource "aws_cloudwatch_event_target" "ecstask" {
   target_id = "SendToECSTask"
-  arn       = local.workspace.cluster.arn
+  arn       = local.workspace.cluster
   rule      = aws_cloudwatch_event_rule.test_data_upload.name
   role_arn  = aws_iam_role.instance_role.arn
 
