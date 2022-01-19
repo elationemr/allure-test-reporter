@@ -1,33 +1,13 @@
-module "test-data-bucket" {
-  source = "git::git@github.com:elationemr/terraform-modules.git//s3"
-
-  project       = local.project
-  environment   = local.workspace.environment
-  bucket_suffix = "test-data-bucket"
-
-  acl            = "public-read"
-  use_encryption = false
-
-  use_versioning = false
-
-  bucket_policy = <<POLICY
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": [
-                "s3:Get*",
-                "s3:List*",
-                "s3:Put*"
-            ],
-            "Effect": "Allow",
-            "Resource": [
-                "arn:aws:s3:::${local.project}-${local.workspace.environment}-test-data-bucket",
-                "arn:aws:s3:::${local.project}-${local.workspace.environment}-test-data-bucket/*"
-            ],
-            "Principal": "*"
-        }
-    ]
-}
-POLICY
+resource "aws_s3_bucket" "test_data_bucket" {
+  bucket        = "${local.project}-${local.workspace.environment}-test-data-bucket"
+  acl           = "public-read"
+  force_destroy = false
+#   server_side_encryption_configuration {
+#     rule {
+#       apply_server_side_encryption_by_default {
+#         sse_algorithm = "AES256"
+#       }
+#     }
+#   }
+  tags = local.default_tags
 }
