@@ -22,10 +22,12 @@ module "test-data-bucket" {
             ],
             "Effect": "Allow",
             "Resource": [
-                "arn:aws:s3:::*-test-data-bucket",
-                "arn:aws:s3:::*-test-data-bucket/*"
+                "arn:aws:s3:::${local.project}-${local.workspace.environment}-test-data-bucket",
+                "arn:aws:s3:::${local.project}-${local.workspace.environment}-test-data-bucket/*"
             ],
-            "Principal": "*"
+            "Principal": {
+                "AWS": "arn:aws:sts::${local.workspace.aws_account_id}:assumed-role/*allure-test-reporter-tr*"
+            }
         }
     ]
 }
