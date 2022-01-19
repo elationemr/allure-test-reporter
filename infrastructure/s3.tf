@@ -24,7 +24,7 @@ module "test-data-bucket" {
             "Resource": [
                 "arn:aws:s3:::*-test-data-bucket",
                 "arn:aws:s3:::*-test-data-bucket/*"
-            ]
+            ],
             "Principal": {
                 "AWS": "arn:aws:sts::${local.workspace.aws_account_id}:assumed-role/*allure-test-reporter-tr*"
             }
