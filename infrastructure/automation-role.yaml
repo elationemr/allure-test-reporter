@@ -157,4 +157,4 @@ Resources:
             Action:
               - 'lambda:*'
             Resource:
-              - arn:aws:lambda:*:${AWS::AccountId}:function:*
+              - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*
