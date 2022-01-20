@@ -13,7 +13,7 @@ data "aws_iam_policy_document" "instance_assume_role_policy" {
 
     principals {
       type        = "Service"
-      identifiers = ["ec2.amazonaws.com", "ecs.amazonaws.com", "ecs-tasks.amazonaws.com"]
+      identifiers = ["lambda.amazonaws.com", "ec2.amazonaws.com", "ecs.amazonaws.com", "ecs-tasks.amazonaws.com"]
     }
   }
 }
