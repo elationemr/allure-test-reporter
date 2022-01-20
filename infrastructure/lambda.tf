@@ -1,5 +1,4 @@
 resource "aws_lambda_function" "generate_report_lambda" {
-  filename      = "generate_report_lambda.zip"
   function_name = "generate_report_lambda"
   role          = aws_iam_role.instance_role.arn
   handler       = "function.generate_report"
