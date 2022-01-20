@@ -7,7 +7,7 @@ resource "aws_lambda_function" "generate_report_lambda" {
   s3_bucket = aws_s3_bucket.test_data_bucket.id
   s3_key    = aws_s3_bucket_object.generate_report_lambda.key
 
-  source_code_hash = data.archive_file.lambda_hello_world.output_base64sha256
+  source_code_hash = data.archive_file.generate_report_lambda.output_base64sha256
 
   runtime = "python3.9"
 
