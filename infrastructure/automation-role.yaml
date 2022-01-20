@@ -152,3 +152,9 @@ Resources:
               - 'events:RemoveTargets'
             Resource:
               - arn:aws:events:*:*:rule/test-data-upload 
+          
+          - Effect: Allow
+            Action:
+              - 'lambda:*'
+            Resource:
+              - arn:aws:lambda:*:${AWS::AccountId}:function:*
