@@ -21,7 +21,7 @@ resource "aws_lambda_function" "generate_report_lambda" {
 data "archive_file" "generate_report_lambda" {
   type = "zip"
 
-  source_dir  = "${path.module}/src/generate-report"
+  source_dir  = "${path.module}/generate-report"
   output_path = "${path.module}/generate-report.zip"
 }
 
