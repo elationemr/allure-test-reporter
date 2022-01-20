@@ -29,7 +29,7 @@ resource "aws_s3_bucket_object" "generate_report_lambda" {
   bucket = aws_s3_bucket.test_data_bucket.id
 
   key    = "generate-report.zip"
-  source = data.archive_file.generete_report_lambda.output_path
+  source = data.archive_file.generate_report_lambda.output_path
 
-  etag = filemd5(data.archive_file.generete_report_lambda.output_path)
+  etag = filemd5(data.archive_file.generate_report_lambda.output_path)
 }
