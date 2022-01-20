@@ -32,7 +32,7 @@ resource "aws_iam_policy" "task_policy" {
     "Statement": [
         {
             "Action": [
-                "ecs:*"
+                "s3:*"
             ],
             "Effect": "Allow",
             "Resource": "*"
@@ -64,8 +64,7 @@ resource "aws_iam_policy" "instance_policy" {
     "Statement": [
         {
             "Action": [
-                "ecs:Describe*",
-                "ecs:List*"
+                "ecs:*"
             ],
             "Effect": "Allow",
             "Resource": "*"
