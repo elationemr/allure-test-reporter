@@ -1,7 +1,7 @@
 import boto3
 import os
 
-def generate_report_handler(event, context):
+def generate_report(event, context):
     client = boto3.client('ecs')
 
     return client.run_task(
