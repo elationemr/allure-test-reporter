@@ -32,7 +32,7 @@ resource "aws_iam_policy" "task_policy" {
     "Statement": [
         {
             "Action": [
-                "s3:*"
+                "ecs:*"
             ],
             "Effect": "Allow",
             "Resource": "*"
@@ -69,57 +69,6 @@ resource "aws_iam_policy" "instance_policy" {
             ],
             "Effect": "Allow",
             "Resource": "*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "ecs:CreateCluster",
-                "ecs:DeregisterContainerInstance",
-                "ecs:DiscoverPollEndpoint",
-                "ecs:Poll",
-                "ecs:RegisterContainerInstance",
-                "ecs:StartTelemetrySession",
-                "ecs:Submit*",
-                "ecr:GetAuthorizationToken",
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage",
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-                "secretsmanager:GetSecretValue"
-            ],
-            "Resource": "*"
-        },
-        {
-            "Action": [
-                "ecs:DeleteCluster",
-                "ecs:DeregisterContainerInstance",
-                "ecs:ListContainerInstances",
-                "ecs:RegisterContainerInstance",
-                "ecs:SubmitContainerStateChange",
-                "ecs:SubmitTaskStateChange"
-            ],
-            "Effect": "Allow",
-            "Resource": "arn:aws:ecs:${local.workspace.region}:${local.workspace.aws_account_id}:cluster/${local.workspace.cluster}"
-        },
-        {
-            "Action": [
-                "ecs:DescribeContainerInstances",
-                "ecs:DescribeTasks",
-                "ecs:ListTasks",
-                "ecs:UpdateContainerAgent",
-                "ecs:StartTask",
-                "ecs:StopTask",
-                "ecs:RunTask"
-            ],
-            "Effect": "Allow",
-            "Resource": "*",
-            "Condition": {
-                "ArnEquals": {
-                    "ecs:cluster": "arn:aws:ecs:${local.workspace.region}:${local.workspace.aws_account_id}:cluster/${local.workspace.cluster}"
-                }
-            }
         }
     ]
 }
